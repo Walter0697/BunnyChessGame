@@ -7,6 +7,7 @@ public class Chess : MonoBehaviour {
     //save the chess information
     public string type;
     [HideInInspector] public int index;
+    [HideInInspector] public bool onBoard;
 
     //for moving the chess
     public Vector3 targetPosition;
@@ -24,7 +25,7 @@ public class Chess : MonoBehaviour {
     }
     // Use this for initialization
     void Start () {
-
+        onBoard = true;
     }
 	
 	// Update is called once per frame
@@ -37,9 +38,12 @@ public class Chess : MonoBehaviour {
 
     void OnMouseUp()
     {
-        if (gameManage.checkMove(type, index))
+        if (gameManage.inGame && onBoard)
         {
-            gameManage.moveChess(index);
-        }  
+            if (gameManage.checkMove(type, index))
+            {
+                gameManage.moveChess(index);
+            }
+        }
     }
 }

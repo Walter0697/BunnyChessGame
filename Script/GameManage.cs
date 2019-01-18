@@ -13,6 +13,7 @@ public class GameManage : MonoBehaviour {
     [HideInInspector] public Chess[] chesses;
 
     //store the current state of the game
+    [HideInInspector] public bool inGame;
     [HideInInspector] public int diceValue;
     [HideInInspector] public string turn;
     [HideInInspector] public bool canDice;
@@ -32,7 +33,8 @@ public class GameManage : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-
+        //shouldn't be in update
+        //menu screen could be another canvas?
     }
 
     public void changeTurn()
@@ -56,7 +58,7 @@ public class GameManage : MonoBehaviour {
             return false;
         }
         //don't know if it goals or just can't cross yet
-        if (chess_index + diceValue > chesses.Length)
+        if (chess_index + diceValue >= chesses.Length)
         {
             Debug.Log("go over the board");
             return false;
@@ -94,14 +96,40 @@ public class GameManage : MonoBehaviour {
 
 
         //if three blocks or more are there, then you can't pass
-        int duplcated_count = 0;
-        string current_chess = "";
+        int duplicated_count = 0;
         for (int i = chess_index; i < chess_index + diceValue; i++)
         {
-            
+            if (chesses[i] == null) duplicated_count = 0;
+            else if (chesses[i].type != type) duplicated_count++; 
+            else if (chesses[i].type == type) duplicated_count = 0;
+
+            if (duplicated_count == 3)
+            {
+                Debug.Log("Can't across three chesses together hon!");
+                return false;
+            }
         }
 
-        //if the enemies are stepping on special shit, then again you can't swipe
+        //if the enemies are stepping on special blocks , then again you can't swipe
+        /*if (chesses[chess_index + diceValue] != null && chesses[chess_index + diceValue].type != type
+            && (chess_index + diceValue == 15 || chess_index + diceValue == 26 || chess_index + diceValue == 28 || chess_index + diceValue == 29))
+            //it might be possible to use "in", idk about C# but should def check it out
+        {
+            Debug.Log("Chess in speccial block!");
+            return false;
+        }*/ 
+        if (chesses[chess_index + diceValue] != null)
+        {
+            if (chesses[chess_index + diceValue].type != type)
+            {
+                //special block should be in 15, 26, 28, 29 but it should decrease by one since it starts from 0
+                if (chess_index + diceValue == 14 || chess_index + diceValue == 25 || chess_index + diceValue == 27 || chess_index + diceValue == 28)
+                {
+                    Debug.Log("special block here");
+                    return false;
+                }
+            }
+        }
 
         //check if there is any restriction in the game that prevent you from moving by index
         return true;
@@ -109,7 +137,6 @@ public class GameManage : MonoBehaviour {
 
     public void moveChess(int chess_index)
     {
-  
         int target_index = chess_index + diceValue;
         
         //if it is over 30, just fucking leave
@@ -120,7 +147,17 @@ public class GameManage : MonoBehaviour {
         else
             moveToBlock(chesses[chess_index], target_index);
         canDice = true;
+        
+        //remove the chess if it is in 30
+        //remove and also set up variable and also just fucking die plz
+        //check if you won the game
         changeTurn();
+    }
+
+    //remove the chess one it is in 30
+    public void finishChess()
+    {
+
     }
 
     //move the block to a certain position
@@ -171,6 +208,7 @@ public class GameManage : MonoBehaviour {
         for (int i = 0; i < rabbits.Length * 2; i += 2) moveToBlock(rabbits[i / 2], i);
         for (int i = 1; i < penguins.Length * 2; i += 2) moveToBlock(penguins[i / 2], i);
 
+        inGame = true;
         turn = "rabbit";
         canDice = true;
         diceValue = 0;
@@ -179,6 +217,7 @@ public class GameManage : MonoBehaviour {
     //simply reset the rotation for the chess
     public static void resetChess(Chess chess)
     {
+        chess.onBoard = true;
         chess.transform.eulerAngles = new Vector3(-270, 0, 180);
     }
 }

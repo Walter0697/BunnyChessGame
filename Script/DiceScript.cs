@@ -22,19 +22,20 @@ public class DiceScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	}
+        if (gameManage.diceValue != 0)
+            uiText.text = "DICE VALUE : " + gameManage.diceValue.ToString();
+        else
+            uiText.text = "DICE VALUE : ?";
+    }
 
     public void rollDice()
     {
         if (gameManage.canDice)
         {
             diceValue = Random.Range(1, 7);
-            uiText.text = "DICE VALUE : " + diceValue.ToString();
             gameManage.canDice = false;
             gameManage.diceValue = diceValue;
-        }
-        else
-        {
+            gameManage.checkAllPossibleMove();
         }
     }
 }

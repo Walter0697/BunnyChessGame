@@ -9,6 +9,9 @@ public class GameManage : MonoBehaviour {
     public Chess[] penguins;     //(-4, 1, -0.85)
     public Block[] blocks;
 
+    public Transform[] winPosition; //store the position they should be in when they left the board
+    private int winRabbit, winPenguin;
+
     //to store the reference of the location for the chess
     [HideInInspector] public Chess[] chesses;
 
@@ -17,6 +20,13 @@ public class GameManage : MonoBehaviour {
     [HideInInspector] public int diceValue;
     [HideInInspector] public string turn;
     [HideInInspector] public bool canDice;
+    [HideInInspector] public bool firstMove;
+    [HideInInspector] public bool forward;
+
+    public ButtonScript inGameCanvas;
+    public ButtonScript menuCanvas;
+    public string message;
+    public string winning_message;
 
     // Use this for initialization
     void Start() {
@@ -27,106 +37,153 @@ public class GameManage : MonoBehaviour {
         Physics.gravity = gravity;
 
         chesses = new Chess[30];
-
-        setupGame();
+        inGame = false;
+        inGameCanvas.hideButton();
+        message = "";
+        winning_message = "";
+        firstMove = false;
     }
 
     // Update is called once per frame
     void Update() {
-        //shouldn't be in update
-        //menu screen could be another canvas?
     }
 
     public void changeTurn()
     {
+        diceValue = 0;
         if (turn == "rabbit") turn = "penguin";
         else                  turn = "rabbit";
     }
 
-    public bool checkMove(string type, int chess_index)
+    //if there are no possible move for the chess, then you will have to move backward
+    public void checkAllPossibleMove()
     {
+        forward = true;
+        bool backward = true;
+        if (turn == "rabbit")
+        {
+            for (int i = 0; i < rabbits.Length; i++)
+            {
+                if (rabbits[i].onBoard)
+                {
+                    if (checkMove(turn, rabbits[i].index, false))
+                    {
+                        backward = false;
+                        break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < penguins.Length; i++)
+            {
+                if (penguins[i].onBoard)
+                {
+                    if (checkMove(turn, penguins[i].index, false))
+                    {
+                        backward = false;
+                        break;
+                    }
+                }
+            }
+        }
+        forward = !backward;
+        if (!forward) message = "NO MOVE: You have to move backward since you have no possible moves";
+    }
+
+    //check if it is a valid move
+    public bool checkMove(string type, int chess_index, bool check_single)
+    {
+        int target_index;
+        if (forward) target_index = chess_index + diceValue;
+        else target_index = chess_index - diceValue;
+
         //if it is not your turn, then you can't move
         if (type != turn)
         {
-            Debug.Log("Not your turn, sorry");
+            if (check_single) message = "it isn't your turn yet!";
             return false;
         }
         //if you haven't rolled the dice, then you can't move
         if (canDice)
         {
-            Debug.Log("You still haven't diced!");
+            if (check_single) message = "you haven't diced!";
             return false;
         }
         //don't know if it goals or just can't cross yet
-        if (chess_index + diceValue >= chesses.Length)
+        if (target_index >= chesses.Length || target_index <= 0)
         {
-            Debug.Log("go over the board");
+            if (check_single) message = "that will go over board";
             return false;
         }
         //if you have another chess here, then you can't move
-        else if (chesses[chess_index + diceValue] != null && chesses[chess_index + diceValue].type == type)
+        else if (chesses[target_index] != null && chesses[target_index].type == type)
         {
-            Debug.Log("You got a chess over there");
+            if (check_single) message = "you got another chess of yours here";
             return false;
         }
 
-        //if two blocks are there, then you can't swipe
-        //but ignore that it is in the corner
-        //let's just check the rule later
-        //but if so just check the target index is 10, 20 or not
-        if (chess_index + diceValue + 1 < chesses.Length)
+        if (!forward)
         {
-            if (chesses[chess_index + diceValue] != null && chesses[chess_index + diceValue + 1] != null)
+            if (chesses[target_index] != null)
             {
-                if (chesses[chess_index + diceValue].type != type && chesses[chess_index + diceValue + 1].type != type)
-                {
-                    Debug.Log("Can't swipe with two chesses together!");
-                    return false;
-                }
-            }
-            else if (chesses[chess_index + diceValue] != null && chesses[chess_index + diceValue - 1] != null)
-            {
-                if (chesses[chess_index + diceValue].type != type && chesses[chess_index + diceValue - 1].type != type)
-                {
-                    Debug.Log("Can't swipe with two chesses together sorry!");
-                    return false;
-                }
-            }
-        }
-
-
-        //if three blocks or more are there, then you can't pass
-        int duplicated_count = 0;
-        for (int i = chess_index; i < chess_index + diceValue; i++)
-        {
-            if (chesses[i] == null) duplicated_count = 0;
-            else if (chesses[i].type != type) duplicated_count++; 
-            else if (chesses[i].type == type) duplicated_count = 0;
-
-            if (duplicated_count == 3)
-            {
-                Debug.Log("Can't across three chesses together hon!");
+                if (check_single) message = "there is a block right here";
                 return false;
             }
         }
-
-        //if the enemies are stepping on special blocks , then again you can't swipe
-        /*if (chesses[chess_index + diceValue] != null && chesses[chess_index + diceValue].type != type
-            && (chess_index + diceValue == 15 || chess_index + diceValue == 26 || chess_index + diceValue == 28 || chess_index + diceValue == 29))
-            //it might be possible to use "in", idk about C# but should def check it out
+        else
         {
-            Debug.Log("Chess in speccial block!");
-            return false;
-        }*/ 
-        if (chesses[chess_index + diceValue] != null)
-        {
-            if (chesses[chess_index + diceValue].type != type)
+            //if two blocks are there, then you can't swipe
+            //but ignore that it is in the corner
+            //let's just check the rule later
+            //but if so just check the target index is 10, 20 or not
+            if (chess_index + diceValue + 1 < chesses.Length)
             {
-                //special block should be in 15, 26, 28, 29 but it should decrease by one since it starts from 0
-                if (chess_index + diceValue == 14 || chess_index + diceValue == 25 || chess_index + diceValue == 27 || chess_index + diceValue == 28)
+                if (chesses[target_index] != null && chesses[target_index + 1] != null)
                 {
-                    Debug.Log("special block here");
+                    if (chesses[target_index].type != type && chesses[target_index + 1].type != type)
+                    {
+                        if (check_single) message = "DEFENSE: Can't swipe with two chesses together!";
+                        return false;
+                    }
+                }
+                else if (chesses[target_index] != null && chesses[target_index - 1] != null)
+                {
+                    if (chesses[target_index].type != type && chesses[target_index - 1].type != type)
+                    {
+                        if (check_single) message = "DEFENSE: Can't swipe with two chesses together!";
+                        return false;
+                    }
+                }
+            }
+
+            //if three blocks or more are there, then you can't pass
+            int duplicated_count = 0;
+            for (int i = chess_index; i < target_index; i++)
+            {
+                if (i == 9 || i == 10 || i == 19 || i == 20) break;
+
+                if (chesses[i] == null) duplicated_count = 0;
+                else if (chesses[i].type != type) duplicated_count++;
+                else if (chesses[i].type == type) duplicated_count = 0;
+
+                if (duplicated_count == 3)
+                {
+                    if (check_single) message = "BLOCKADE: Can't go across three chesses";
                     return false;
+                }
+            }
+            if (chesses[target_index] != null)
+            {
+                if (chesses[target_index].type != type)
+                {
+                    //special block should be in 15, 26, 28, 29 but it should decrease by one since it starts from 0
+                    if (target_index == 14 || target_index == 25 || target_index == 27 || target_index == 28)
+                    {
+                        if (check_single) message = "SAFETY: this block cannot be attacked";
+                        return false;
+                    }
                 }
             }
         }
@@ -135,29 +192,62 @@ public class GameManage : MonoBehaviour {
         return true;
     }
 
-    public void moveChess(int chess_index)
+    public void moveChess(int chess_index, bool forward_move)
     {
-        int target_index = chess_index + diceValue;
-        
+        message = "";
+        int target_index;
+        if (forward_move) target_index = chess_index + diceValue;
+        else target_index = chess_index - diceValue;
+
+        //if player steps in 27, it will return to 15 
+        if (target_index == 26)
+        {
+            target_index = 14;
+            while (chesses[target_index] != null) target_index--;
+            message = "TRAP: land on this block will teleport you to other block";
+        }
+
         //if it is over 30, just fucking leave
-        if (chesses[chess_index + diceValue] == null)
+        if (chesses[target_index] == null)
             moveToBlock(chesses[chess_index], target_index);
-        else if (chesses[chess_index + diceValue].type != chesses[chess_index].type)
+        else if (chesses[target_index].type != chesses[chess_index].type)
             swipeToBlock(chesses[chess_index], target_index);
         else
             moveToBlock(chesses[chess_index], target_index);
         canDice = true;
-        
-        //remove the chess if it is in 30
-        //remove and also set up variable and also just fucking die plz
+
+        if (target_index == 29)
+            finishChess();
+
         //check if you won the game
-        changeTurn();
+        if (winRabbit == 5 || winPenguin == 5)
+        {
+            if (winRabbit == 5) winning_message = "RABBIT WINS!";
+            else winning_message = "PENGUIN WINS!";
+            endGame();
+        }
+        else
+        {
+            changeTurn();
+        }
     }
 
     //remove the chess one it is in 30
     public void finishChess()
     {
-
+        //to be honest this will be checked in last function but just to make sure here 
+        if (chesses[29] != null)
+        {
+            chesses[29].onBoard = false;
+            chesses[29].index = -1;
+            chesses[29].transform.rotation = winPosition[winPenguin + winRabbit].rotation;
+            chesses[29].targetPosition = winPosition[winPenguin + winRabbit].position;
+            if (chesses[29].type == "rabbit")
+                winRabbit++;
+            else
+                winPenguin++;
+            chesses[29] = null;
+        }
     }
 
     //move the block to a certain position
@@ -189,13 +279,11 @@ public class GameManage : MonoBehaviour {
         chesses[block_index].index = block_index;
     }
 
-    public Vector3 getTargetPosition(Vector3 target_block, string type)
-    {
-        if (type == "rabbit")
-            return new Vector3(target_block.x, target_block.y, -0.7f);
-        else
-            return new Vector3(target_block.x, target_block.y, -0.85f);
-    }
+    
+
+    /// 
+    /// SETTING UP OR ENDING GAME BELOW
+    /// 
 
     //for starting or restarting the game
     public void setupGame()
@@ -205,13 +293,30 @@ public class GameManage : MonoBehaviour {
         for (int i = 0; i < rabbits.Length; i++) resetChess(rabbits[i]);
         for (int i = 0; i < penguins.Length; i++) resetChess(penguins[i]);
         //for setting all chesses into the gameboard
-        for (int i = 0; i < rabbits.Length * 2; i += 2) moveToBlock(rabbits[i / 2], i);
-        for (int i = 1; i < penguins.Length * 2; i += 2) moveToBlock(penguins[i / 2], i);
+        for (int i = 0; i < rabbits.Length * 2; i += 2) moveToBlock(penguins[i / 2], i);
+        for (int i = 1; i < penguins.Length * 2; i += 2) moveToBlock(rabbits[i / 2], i);
 
         inGame = true;
         turn = "rabbit";
         canDice = true;
         diceValue = 0;
+        message = "Game Start";
+        forward = true;
+        firstMove = true;
+
+        winRabbit = 0;
+        winPenguin = 0;
+
+        inGameCanvas.showButton();
+        menuCanvas.hideButton();
+    }
+
+    //when the game ends, call this function
+    public void endGame()
+    {
+        inGame = false;
+        inGameCanvas.hideButton();
+        menuCanvas.showButton();
     }
 
     //simply reset the rotation for the chess
@@ -219,5 +324,14 @@ public class GameManage : MonoBehaviour {
     {
         chess.onBoard = true;
         chess.transform.eulerAngles = new Vector3(-270, 0, 180);
+    }
+
+    // get the height for the type of the chess
+    public Vector3 getTargetPosition(Vector3 target_block, string type)
+    {
+        if (type == "rabbit")
+            return new Vector3(target_block.x, target_block.y, -0.7f);
+        else
+            return new Vector3(target_block.x, target_block.y, -0.85f);
     }
 }

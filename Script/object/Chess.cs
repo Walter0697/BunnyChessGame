@@ -40,9 +40,19 @@ public class Chess : MonoBehaviour {
     {
         if (gameManage.inGame && onBoard)
         {
-            if (gameManage.checkMove(type, index))
+            if (gameManage.forward && gameManage.checkMove(type, index, true))
             {
-                gameManage.moveChess(index);
+                if (gameManage.firstMove && index != 9) gameManage.message = "FIRST MOVE: has to move the first chess";
+                else
+                {
+                    if (gameManage.firstMove) gameManage.firstMove = false;
+                    gameManage.moveChess(index, true);
+                }
+            }
+            //if no possible move, then you have to move backward
+            else if (gameManage.forward == false)
+            {
+                gameManage.moveChess(index, false);
             }
         }
     }

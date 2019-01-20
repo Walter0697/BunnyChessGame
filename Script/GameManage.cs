@@ -40,7 +40,7 @@ public class GameManage : MonoBehaviour {
         inGame = false;
         inGameCanvas.hideButton();
         message = "";
-        winning_message = "";
+        winning_message = "Welcome!";
         firstMove = false;
     }
 

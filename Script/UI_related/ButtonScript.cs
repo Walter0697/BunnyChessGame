@@ -23,4 +23,9 @@ public class ButtonScript : MonoBehaviour {
     {
         gameObject.SetActive(true);
     }
+
+    public void exitGame()
+    {
+        Application.Quit();
+    }
 }

@@ -17,11 +17,13 @@ public class GameManage : MonoBehaviour {
 
     //store the current state of the game
     [HideInInspector] public bool inGame;
-    [HideInInspector] public int diceValue;
     [HideInInspector] public string turn;
     [HideInInspector] public bool canDice;
     [HideInInspector] public bool firstMove;
     [HideInInspector] public bool forward;
+
+    [HideInInspector] public int diceValue;
+    [HideInInspector] public bool extraTurn;
 
     public ButtonScript inGameCanvas;
     public ButtonScript menuCanvas;
@@ -40,8 +42,9 @@ public class GameManage : MonoBehaviour {
         inGame = false;
         inGameCanvas.hideButton();
         message = "";
-        winning_message = "Welcome!";
+        winning_message = "BunnySenet";
         firstMove = false;
+        extraTurn = false;
     }
 
     // Update is called once per frame
@@ -228,7 +231,8 @@ public class GameManage : MonoBehaviour {
         }
         else
         {
-            changeTurn();
+            if (!extraTurn)
+                changeTurn();
         }
     }
 

@@ -5,6 +5,8 @@
 - Rabbit is always the starter because I like rabbit
 
 ### Implemented Bonus Feature:
+- Special Dice: the move is basically the instruction of the original game
+
 - FIRST MOVE: 10th chess always starts first
 - SAFETY: chess above blocks with special drawing cannot be attacked
 - DEFENSE: chess cannot be attacked when two chesses are staying together
@@ -28,3 +30,8 @@
 - I am glad you read that far, hmmmmm, I really didn't have to do that much for this assignment and I know, I just want to treat it as an enjoyable game instead of just an assignment
 - If you enjoy it, feel free to give me some feedbacks for it, I don't know how busy I will be in this semester
 - but I will try to make the second assignment as enjoyable as I can
+
+### Might implement:
+- AI, shouldn't be too hard, just see which chess has the most beneficial move and move it
+- nicer button sprite
+- title icon

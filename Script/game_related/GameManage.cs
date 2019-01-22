@@ -27,8 +27,8 @@ public class GameManage : MonoBehaviour {
 
     public ButtonScript inGameCanvas;
     public ButtonScript menuCanvas;
-    public string message;
-    public string winning_message;
+    [HideInInspector] public string message;
+    [HideInInspector] public string winning_message;
 
     // Use this for initialization
     void Start() {
@@ -53,7 +53,6 @@ public class GameManage : MonoBehaviour {
 
     public void changeTurn()
     {
-        diceValue = 0;
         if (turn == "rabbit") turn = "penguin";
         else                  turn = "rabbit";
     }
@@ -231,8 +230,11 @@ public class GameManage : MonoBehaviour {
         }
         else
         {
+            diceValue = 0;
             if (!extraTurn)
+            {
                 changeTurn();
+            }
         }
     }
 

@@ -33,6 +33,18 @@ public class DiceScript : MonoBehaviour {
 
     public void rollDice()
     {
+        //if you are playing against AI, you can't dice when it is not your turn
+        if (!gameManage.multiplayer && gameManage.turn == "penguin")
+        {
+            gameManage.message = "it is my turn to dice, human";
+            return;
+        }
+
+        randomRoll();
+    }
+
+    public void randomRoll()
+    {
         if (gameManage.canDice)
         {
             //true => white

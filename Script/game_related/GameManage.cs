@@ -16,12 +16,19 @@ public class GameManage : MonoBehaviour {
     [HideInInspector] public Chess[] chesses;
 
     //store the current state of the game
-    [HideInInspector] public bool inGame;
-    [HideInInspector] public string turn;
-    [HideInInspector] public bool canDice;
-    [HideInInspector] public bool firstMove;
-    [HideInInspector] public bool forward;
+    [HideInInspector] public bool inGame;           //check if it is in game, or in menu
+    [HideInInspector] public bool canDice;          //check if you diced
+    
+    //variable for extra features
+    [HideInInspector] public bool forward;          //check NO MOVE: if no chess can move forward, then you have to move backward
+    [HideInInspector] public bool firstMove;        //check FIRST MOVE: only 10th chess can move
 
+    [HideInInspector] public bool multiplayer;      //if it is not multiplayer, then you are playing with AI
+    public GameObject ai_enemy;
+
+    [HideInInspector] public string turn;           //rabbit or penguin
+
+    //dice: movement for the character
     [HideInInspector] public int diceValue;
     [HideInInspector] public bool extraTurn;
 
@@ -45,6 +52,9 @@ public class GameManage : MonoBehaviour {
         winning_message = "BunnySenet";
         firstMove = false;
         extraTurn = false;
+        multiplayer = false;
+
+        ai_enemy.SetActive(false);
     }
 
     // Update is called once per frame
@@ -166,6 +176,7 @@ public class GameManage : MonoBehaviour {
             {
                 if (i == 9 || i == 10 || i == 19 || i == 20) break;
 
+                Debug.Log(i);
                 if (chesses[i] == null) duplicated_count = 0;
                 else if (chesses[i].type != type) duplicated_count++;
                 else if (chesses[i].type == type) duplicated_count = 0;
@@ -292,7 +303,7 @@ public class GameManage : MonoBehaviour {
     /// 
 
     //for starting or restarting the game
-    public void setupGame()
+    public void setupGame(bool multi)
     {
         for (int i = 0; i < chesses.Length; i++) chesses[i] = null;
         //reset all the rotations for the chess
@@ -309,6 +320,8 @@ public class GameManage : MonoBehaviour {
         message = "Game Start";
         forward = true;
         firstMove = true;
+        multiplayer = multi;
+        ai_enemy.SetActive(!multi);
 
         winRabbit = 0;
         winPenguin = 0;

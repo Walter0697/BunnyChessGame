@@ -20,7 +20,7 @@ public class DayLightChange : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         timer++;
-        if (timer > 5) //10 should be default
+        if (timer > 2) //10 should be default
         {
             light_source.transform.rotation = light_source.transform.rotation * Quaternion.Euler(0, 0.05f, 0);
             timer = 0;

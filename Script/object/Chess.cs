@@ -38,6 +38,19 @@ public class Chess : MonoBehaviour {
 
     void OnMouseUp()
     {
+        //if you are playing against computer, then you will have to wait
+        if (!gameManage.multiplayer && gameManage.turn == "penguin")
+        {
+            gameManage.message = "not your turn yet, human";
+            return;
+        }
+
+        selectChess();
+    }
+
+    public void selectChess()
+    {
+        //check if the game started yet
         if (gameManage.inGame && onBoard)
         {
             if (gameManage.forward && gameManage.checkMove(type, index, true))

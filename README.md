@@ -13,6 +13,7 @@
 - BLOCKADE: chess cannot be passed through when three chesses are staying together, except for corners
 - TRAP: one of the block with special drawing will teleport player into a particular block
 - EXIT: I feel like this is ruinning the game since the game will be more furstrating if I implemented that so I decided not to
+- AI: it will always move the furthest piece first, unless it can't then it will move the second one, well I play it that way so I think that's pretty intellegent
 
 ### Code:
 - Most of the important features are implemented inside GameManage.cs
@@ -32,6 +33,5 @@
 - but I will try to make the second assignment as enjoyable as I can
 
 ### Might implement:
-- AI, shouldn't be too hard, just see which chess has the most beneficial move and move it
-- nicer button sprite
+- better AI?
 - title icon

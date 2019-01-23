@@ -49,7 +49,7 @@ public class GameManage : MonoBehaviour {
         inGame = false;
         inGameCanvas.hideButton();
         message = "";
-        winning_message = "BunnySenet";
+        winning_message = "welcome!";
         firstMove = false;
         extraTurn = false;
         multiplayer = false;

@@ -176,7 +176,6 @@ public class GameManage : MonoBehaviour {
             {
                 if (i == 9 || i == 10 || i == 19 || i == 20) break;
 
-                Debug.Log(i);
                 if (chesses[i] == null) duplicated_count = 0;
                 else if (chesses[i].type != type) duplicated_count++;
                 else if (chesses[i].type == type) duplicated_count = 0;

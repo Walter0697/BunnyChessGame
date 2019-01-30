@@ -32,6 +32,4 @@
 - If you enjoy it, feel free to give me some feedbacks for it, I don't know how busy I will be in this semester
 - but I will try to make the second assignment as enjoyable as I can
 
-### Might implement:
-- better AI?
-- title icon
+Done, and made public <3

@@ -1,5 +1,9 @@
 # BunnyChessGame (very adorable)
 
+- ![](https://github.com/Walter0697/PersonalWebsite/blob/master/src/sprite/screenshot/bs003.gif)
+- ![](https://github.com/Walter0697/PersonalWebsite/blob/master/src/sprite/screenshot/bs001.png)
+- ![](https://github.com/Walter0697/PersonalWebsite/blob/master/src/sprite/screenshot/bs002.png)
+
 ### How to play:
 - Just click "Start Game" and roll the dice
 - Rabbit is always the starter because I like rabbit
